@@ -23,14 +23,18 @@ public interface FileManager {
 			if (file.isFile()) {
 				if( file.getName().substring(file.getName().lastIndexOf(".")+1,file.getName().length()).equals("ozr")) {
 					//String fileContents = getFileContents(file);
-					makeFileOutput(file,getFileContents(file),1);
+					makeFileOutput(file,getFileContents(file),1, "");
 				}
 			}
 		}
 	}
-	static void XmlOzrConvert(String source) throws IOException {
+	static void XmlOzrConvert(String source, String languageSeq) throws IOException {
 		// TODO Auto-generated method stub
-		File dir = new File(source);
+		File dir = new File(source+"\\xml");
+		if(!dir.isDirectory()) {
+			System.out.println("there is no xml folder.");
+			return;	
+		}			
 		File[] fileList = dir.listFiles();
 //					if(!(new File(dir.toString()+"\\ozr_to_xml")).exists()) {
 //						(new File(dir.toString()+"\\ozr_to_xml")).mkdirs();
@@ -40,28 +44,31 @@ public interface FileManager {
 			if (file.isFile()) {
 				if( file.getName().substring(file.getName().lastIndexOf(".")+1,file.getName().length()).equals("xml")) {
 					//String fileContents = getFileContents(file);
-					makeFileOutput(file,getFileContents(file),2);
+					makeFileOutput(file,getFileContents(file),2, languageSeq);
 				}
 			}
 		}
 	}
 
-	static void makeFileOutput(File file, String fileContents, int flag) throws IOException {
+	static void makeFileOutput(File file, String fileContents, int flag, String languageSeq) throws IOException {
 		// TODO Auto-generated method stub
 		String target;
 		File folder;
 		if (flag==1) {
-			folder = new File(file.getParentFile()+"\\ozr_to_xml");
-			if(folder.exists()){
+			folder = new File(file.getParentFile()+"\\xml");
+			System.out.println("test" + folder.exists());
+			if(!folder.exists()){
+				System.out.println("Xml folder created.");
 				folder.mkdir();
 			}
 			target = folder.getPath()+"\\"+file.getName().replace(".ozr", ".xml");
 		}else{
-			folder = new File(file.getParentFile()+"\\xml_to_ozr\\");
+			folder = new File(file.getParentFile().toString().replaceAll("xml", "language"+languageSeq));
 			if(!folder.exists()){
+				System.out.println("language"+languageSeq +"folder created.");
 				folder.mkdir();
 			}
-			target = folder.getPath()+"\\"+file.getName().replace(".xml", ".ozr");
+			target = folder.getPath()+"\\"+file.getName().replace(".xml", "_L"+ languageSeq + ".ozr");
 		}
 		System.out.println(target);
 		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(target),"UTF8"));
